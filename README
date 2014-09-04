@@ -1,0 +1,101 @@
+* source tree
+    libmoss/
+    |- include/
+    |  |- moss/
+    |    |- util.h
+    |
+    |- src/
+    |  |- main.c
+    |
+    |- AUTHORS, ChangeLog, NEWS, README
+    |- configure.ac, Makefile.am, autogen.sh, autodistclean.sh 
+
+* libex1/include/ex1/util.h
+    #ifndef _H_EX1_UTIL
+    #define _H_EX1_UTIL
+    
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <unistd.h>
+    #include <string.h>
+    #include <stdarg.h>
+    
+    int ex1_test(const char *str);
+    
+    #ifdef __cplusplus
+    } /* extern "C" */
+    #endif
+    
+    #endif /* _H_EX1_UTIL */
+    
+* libex1/src/main.c
+    #include <ex1/util.h>
+    
+    int ex1_test(const char *str)
+    {
+    	return printf("%s", str);
+    }
+
+* src/main.c
+    #include <ex1/util.h>
+    
+    int main(int argc, char **argv)
+    {
+    	int i;
+    
+    	for (i = 0; i < argc; i++) {
+    		log_debug("argv[%d / %d]: %s\n", i + 1, argc, argv[i]);
+    	}
+    
+    	ex1_test("done\n");
+    	return 0;
+    }
+* manual build/run
+    $ gcc -o ex1 -I`pwd`/libex1/include src/main.c libex1/src/main.c
+    
+    $ ./ex1
+    done
+
+* initial configure.ac
+    $ autoscan
+    
+    ex1/
+    |- autoscan.log
+    |- configure.scan
+
+    $ rm autoscan.log # we ignore this file
+    $ mv configure.scan configure.ac # template file
+ 
+* configure.scan
+    AC_PREREQ([2.69])
+    AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
+    AC_CONFIG_SRCDIR([src/main.c])
+    AC_CONFIG_HEADERS([config.h])
+    
+    AC_PROG_CC
+    
+    AC_CHECK_HEADERS([stdlib.h string.h unistd.h])
+    
+    AC_TYPE_SIZE_T
+    
+    AC_OUTPUT
+
+* configure.ac without automake
+    AC_PREREQ([2.69])
+    AC_INIT([ex1], [1.1], [joelai@lavender])
+    AC_CONFIG_SRCDIR([src/main.c])
+    AC_CONFIG_HEADERS([config.h])
+    
+    AC_PROG_CC
+    AC_PROG_LIBTOOL
+    
+    AC_CONFIG_FILES([Makefile])
+    
+    AC_TYPE_SIZE_T
+   
+    AC_OUTPUT
+
+* test with autoconf
+    autoreconf -fiv
+
+* finally support autoconf/automake/libtool and configuration options
